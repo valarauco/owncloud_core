@@ -25,6 +25,11 @@ namespace OCA\user_ldap\lib;
 
 abstract class Access {
 	protected $connection;
+	private $resemblingAttributes = array(
+			'dn',
+			'uniquemember',
+			'member'
+		);
 
 	public function setConnector(Connection &$connection) {
 		$this->connection = $connection;
@@ -81,12 +86,7 @@ abstract class Access {
 	 * @return if so true, otherwise false
 	 */
 	private function resemblesDN($attr) {
-		$resemblingAttributes = array(
-			'dn',
-			'uniquemember',
-			'member'
-		);
-		return in_array($attr, $resemblingAttributes);
+		return in_array($attr, $this->resemblingAttributes);
 	}
 
 	/**
@@ -311,6 +311,7 @@ abstract class Access {
 			//everything is fine when we know the group
 			if($key !== false) {
 				$ownCloudNames[] = $knownObjects[$key]['owncloud_name'];
+				unset($knownObjects[$key]);
 				continue;
 			}
 
@@ -385,7 +386,7 @@ abstract class Access {
 		$sqlAdjustment = '';
 		$dbtype = \OCP\Config::getSystemValue('dbtype');
 		if($dbtype == 'mysql') {
-			$sqlAdjustment = 'FROM `dual`';
+			$sqlAdjustment = 'FROM DUAL';
 		}
 
 		$insert = \OCP\DB::prepare('
