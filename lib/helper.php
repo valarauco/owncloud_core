@@ -678,7 +678,7 @@ class OC_Helper {
 		$it = new RecursiveIteratorIterator($aIt);
 
 		while($it->valid()) {
-			if (($it->current() == $needle) AND ((!isset($index)) OR (isset($index) AND ($it->key() == $index)))) {
+			if (((isset($index) AND ($it->key() == $index)) OR (!isset($index))) AND ($it->current() == $needle)) {
 				return $aIt->key();
 			}
 
