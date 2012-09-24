@@ -206,21 +206,17 @@ abstract class Access {
 		$dn = $this->sanitizeDN($dn);
 		$table = $this->getMapTable($isUser);
 		if($isUser) {
+			$fncFindMappedName = 'findMappedUser';
 			$nameAttribute = $this->connection->ldapUserDisplayName;
 		} else {
+			$fncFindMappedName = 'findMappedGroup';
 			$nameAttribute = $this->connection->ldapGroupDisplayName;
 		}
 
-		$query = \OCP\DB::prepare('
-			SELECT `owncloud_name`
-			FROM `'.$table.'`
-			WHERE `ldap_dn` = ?
-		');
-
 		//let's try to retrieve the ownCloud name from the mappings table
-		$component = $query->execute(array($dn))->fetchOne();
-		if($component) {
-			return $component;
+		$ocname = $this->$fncFindMappedName($dn);
+		if($ocname) {
+			return $ocname;
 		}
 
 		//second try: get the UUID and check if it is known. Then, update the DN and return the name.
@@ -297,7 +293,11 @@ abstract class Access {
 
 	private function findMappedUser($dn) {
 		static $query = null;
+<<<<<<< HEAD
 		if(is_null($query)) { 
+=======
+		if(is_null($query)) {
+>>>>>>> upstream/master
 			$query = \OCP\DB::prepare('
 				SELECT `owncloud_name`
 				FROM `'.$this->getMapTable(true).'`
@@ -318,7 +318,11 @@ abstract class Access {
                         	SELECT `owncloud_name`
 	                        FROM `'.$this->getMapTable(false).'`
         	                WHERE `ldap_dn` = ?'
+<<<<<<< HEAD
                 	);      
+=======
+                	);
+>>>>>>> upstream/master
 		}
                 $res = $query->execute(array($dn))->fetchOne();
                 if($res) {
@@ -339,12 +343,15 @@ abstract class Access {
 		$ownCloudNames = array();
 
 		foreach($ldapObjects as $ldapObject) {
+<<<<<<< HEAD
 			$ocname = $this->$fncFindMappedName($ldapObject['dn']);
 			if($ocname) {
 				$ownCloudNames[] = $ocname;
 				continue;
 			}
 
+=======
+>>>>>>> upstream/master
 			$ocname = $this->dn2ocname($ldapObject['dn'], $ldapObject[$nameAttribute], $isUsers);
 			if($ocname) {
 				$ownCloudNames[] = $ocname;
